@@ -1,4 +1,4 @@
-﻿namespace TextModeration;
+﻿namespace TextModeration.src;
 
 /// <summary>
 /// Representa el estado de moderación de un texto.

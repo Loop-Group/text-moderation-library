@@ -1,4 +1,4 @@
-﻿namespace TextModeration;
+﻿namespace TextModeration.src;
 
 /// <summary>
 /// Opciones de configuración para <see cref="TextModerationService"/>.

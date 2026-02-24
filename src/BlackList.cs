@@ -1,4 +1,4 @@
-﻿namespace TextModeration;
+﻿namespace TextModeration.src;
 
 /// <summary>
 /// Clase estática que contiene una lista de palabras prohibidas para moderación de texto.

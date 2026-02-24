@@ -2,7 +2,7 @@
 using System.Text.Json;
 using System.Text.RegularExpressions;
 
-namespace TextModeration;
+namespace TextModeration.src;
 
 
 /// <summary>

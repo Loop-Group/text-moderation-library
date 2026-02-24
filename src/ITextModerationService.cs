@@ -1,4 +1,4 @@
-﻿namespace TextModeration;
+﻿namespace TextModeration.src;
 
 /// <summary>
 /// Define la interfaz para un servicio de moderación de texto.
