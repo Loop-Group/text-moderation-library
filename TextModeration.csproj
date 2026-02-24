@@ -16,6 +16,9 @@
 		<Description>Lightweight text moderation library using rules and AI providers like Ollama.</Description>
 		<PackageTags>ai moderation text filter profanity ollama</PackageTags>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<RepositoryUrl>https://github.com/Loop-Group/text-moderation-library</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 
 		<!-- Build -->
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -25,7 +28,6 @@
 		<!-- Quality -->
 		<TreatWarningsAsErrors>false</TreatWarningsAsErrors>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
-
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -34,5 +36,13 @@
 		<PackageReference Include="System.Text.Json" Version="9.0.0" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<!-- Incluye el README en el paquete NuGet -->
+		<None Include="README.md" Pack="true" PackagePath="" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="docs\" />
+	</ItemGroup>
 
 </Project>
