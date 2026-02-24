@@ -58,7 +58,7 @@ public class TextModerationService : ITextModerationService
     {
         try
         {
-            using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(8));
+            using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(_options.TimeOut));
             using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(ct, timeoutCts.Token);
 
             _httpClient.DefaultRequestHeaders.Remove("Authorization");

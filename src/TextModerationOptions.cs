@@ -25,6 +25,11 @@ public class TextModerationOptions
     public required string ApiKey { get; set; }
 
     /// <summary>
+    /// Tiempo maximo de espera para la respuesta de la API, en segundos.
+    /// </summary>
+    public required int TimeOut { get; set; }
+
+    /// <summary>
     /// Genera el prompt que será enviado a la API de moderación.
     /// El prompt instruye al modelo a clasificar el texto en una sola categoría.
     /// </summary>
