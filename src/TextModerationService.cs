@@ -28,6 +28,7 @@ public class TextModerationService : ITextModerationService
     }
 
 
+    /// <inheritdoc/>
     public async Task<TextModerationStatus> AnalyzeAsync(string text, CancellationToken ct = default)
     {
         if(BlackList.GetWords().Any(word => text.Contains(word, StringComparison.OrdinalIgnoreCase)))
@@ -55,38 +56,49 @@ public class TextModerationService : ITextModerationService
     /// </remarks>
     public async Task<TextModerationStatus> AnalyzeWithAIAsync(string text, CancellationToken ct = default)
     {
-        _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {_options.ApiKey}");
-
-        var body = new
+        try
         {
-            model = _options.Model,
-            prompt = _options.GetPromp(text),
-            stream = false
-        };
+            using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(8));
+            using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(ct, timeoutCts.Token);
 
-        var json = JsonSerializer.Serialize(body);
-        using var content = new StringContent(json, Encoding.UTF8, "application/json");
+            _httpClient.DefaultRequestHeaders.Remove("Authorization");
+            _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {_options.ApiKey}");
 
-        var response = await _httpClient.PostAsync(_options.BaseUrl, content, ct);
+            var body = new
+            {
+                model = _options.Model,
+                prompt = _options.GetPromp(text),
+                stream = false
+            };
 
-        if (!response.IsSuccessStatusCode)
+            var json = JsonSerializer.Serialize(body);
+            using var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.PostAsync(_options.BaseUrl, content, linkedCts.Token);
+
+            if (!response.IsSuccessStatusCode)
+                return TextModerationStatus.Error;
+
+            var jsonResponse = await response.Content.ReadAsStringAsync(linkedCts.Token);
+
+            var data = JsonSerializer.Deserialize<OllamaResponse>(jsonResponse);
+
+            var result = data?.Response ?? "";
+
+            if (result.Contains("Inappropriate", StringComparison.OrdinalIgnoreCase))
+                return TextModerationStatus.Inappropriate;
+
+            if (result.Contains("Appropriate", StringComparison.OrdinalIgnoreCase))
+                return TextModerationStatus.Appropriate;
+
+            if (result.Contains("Unknown", StringComparison.OrdinalIgnoreCase))
+                return TextModerationStatus.Unknown;
+
             return TextModerationStatus.Error;
-
-        var jsonResponse = await response.Content.ReadAsStringAsync(ct);
-
-        var data = JsonSerializer.Deserialize<OllamaResponse>(jsonResponse);
-
-        var result = data?.Response ?? "";
-
-        if (result.Contains("Inappropriate", StringComparison.OrdinalIgnoreCase))
-            return TextModerationStatus.Inappropriate;
-
-        if (result.Contains("Appropriate", StringComparison.OrdinalIgnoreCase))
-            return TextModerationStatus.Appropriate;
-
-        if (result.Contains("Unknown", StringComparison.OrdinalIgnoreCase))
-            return TextModerationStatus.Unknown;
-
-        return TextModerationStatus.Error;
+        }
+        catch 
+        {
+            return TextModerationStatus.Error;
+        }
     }
 }
